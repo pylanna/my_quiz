@@ -2,3 +2,7 @@ node_modules
 .wrangler
 .dev.vars
 .claude/
+python_modules/
+pylock.toml
+.venv/
+__pycache__/
