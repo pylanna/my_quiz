@@ -1,10 +1,10 @@
 import { DurableObject } from "cloudflare:workers";
-import { begin, emptyState, isIdle, LIMITS, succeed, type LimiterState } from "./core/ratelimit";
+import { begin, isIdle, LIMITS, normalizeState, succeed, type LimiterState } from "./core/ratelimit";
 
 /** One Durable Object per client IP. State is persisted so it survives eviction. */
 export class RateLimiter extends DurableObject {
   private async load(): Promise<LimiterState> {
-    return (await this.ctx.storage.get<LimiterState>("state")) ?? emptyState();
+    return normalizeState(await this.ctx.storage.get("state"));
   }
 
   private async save(state: LimiterState): Promise<void> {

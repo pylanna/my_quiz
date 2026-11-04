@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { begin, emptyState, LIMITS, succeed, type LimiterState } from "../src/core/ratelimit";
+import { begin, emptyState, LIMITS, normalizeState, succeed, type LimiterState } from "../src/core/ratelimit";
 
 const MIN = 60_000;
 
@@ -72,5 +72,18 @@ describe("successful login", () => {
     const s = fail(emptyState(), LIMITS.maxAttempts, 0);
     expect(begin(s, 1).ok).toBe(false);
     expect(begin(emptyState(), 1).ok).toBe(true);
+  });
+});
+
+describe("normalizeState", () => {
+  it("reads an object and a JSON string (the Python version stored a string)", () => {
+    expect(normalizeState({ attempts: [1, 2], creations: [3] })).toEqual({ attempts: [1, 2], creations: [3] });
+    expect(normalizeState('{"attempts": [1], "creations": []}')).toEqual({ attempts: [1], creations: [] });
+  });
+
+  it("starts fresh instead of crashing on anything unreadable", () => {
+    for (const junk of [undefined, null, "", "not json", "[1,2]", 42, ["x"], { attempts: "oops" }, { attempts: [1, "a"] }]) {
+      expect(normalizeState(junk)).toEqual(emptyState());
+    }
   });
 });

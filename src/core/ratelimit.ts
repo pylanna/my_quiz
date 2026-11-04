@@ -25,6 +25,26 @@ export type BeginResult =
 
 export const emptyState = (): LimiterState => ({ attempts: [], creations: [] });
 
+const isTimes = (v: unknown): v is number[] => Array.isArray(v) && v.every((t) => typeof t === "number" && Number.isFinite(t));
+
+/**
+ * Read whatever storage holds: an object, a JSON string (what the Python version stored), or garbage.
+ * Anything unreadable starts fresh rather than breaking Host logins.
+ */
+export function normalizeState(raw: unknown): LimiterState {
+  let value = raw;
+  if (typeof value === "string") {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return emptyState();
+    }
+  }
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return emptyState();
+  const { attempts = [], creations = [] } = value as Record<string, unknown>;
+  return isTimes(attempts) && isTimes(creations) ? { attempts, creations } : emptyState();
+}
+
 const recent = (times: number[], now: number, windowMs: number) => times.filter((t) => now - t < windowMs);
 
 function waitSec(times: number[], now: number, windowMs: number): number {
