@@ -15,13 +15,16 @@ HOST_PASSWORD=... node scripts/smoke.mjs   # end-to-end check against the runnin
 
 ## Simulate many phones
 
-`scripts/load.mjs` plays one full Game with N simulated phones (default 20) and an auto-advancing Host: everyone joins at once, answers at random speeds, two phones drop and reconnect, two never answer one question, and a latecomer is refused. It checks scores, ranks, the results CSV and the final screens, and prints latency percentiles. Uses one successful Host login.
+`scripts/load.mjs` plays one full Game with N simulated phones (default 20) and an auto-advancing Host: everyone joins at once, answers at random speeds, two phones drop and reconnect, two never answer one question, and a latecomer is refused. Phones reconnect automatically after any drop, as the real page does. It checks scores, ranks, the results CSV and the final screens, and prints latency percentiles. Uses one successful Host login.
 
 ```bash
 HOST_PASSWORD=... node scripts/load.mjs http://localhost:8787 70
+CHAOS=1 HOST_PASSWORD=... node scripts/load.mjs http://localhost:8787 20   # also kills random sockets mid-game
 ```
 
-Locally (2026-11-04): 20 and 70 phones both pass; a question reaches every phone within ~12 ms, answers confirm in ~1 ms. Those numbers exclude real network and mobile-device effects.
+It starts with a preflight (20 parallel downloads of a static file). If that shows a slow tail, the machine's own connection is stalling under parallel load and the results measure your network, not the server: try another network, such as a phone hotspot.
+
+Locally (2026-11-04): 20 and 70 phones both pass, including 10 random disconnects with CHAOS=1; a question reaches every phone within ~12 ms, answers confirm in ~2 ms. A first run against the live site from one machine failed on joins and final screens, but plain static downloads from that same machine showed 12-28 s TLS/first-byte stalls under 20 parallel requests, so that run mostly measured that machine's connection.
 
 ## Deploy (free)
 
