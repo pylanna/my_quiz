@@ -1,0 +1,16 @@
+{
+  "name": "my-quiz",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-11-01",
+  "assets": { "directory": "./public" },
+  "durable_objects": {
+    "bindings": [
+      { "name": "GAME_ROOM", "class_name": "GameRoom" },
+      { "name": "RATE_LIMITER", "class_name": "RateLimiter" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["GameRoom"] },
+    { "tag": "v2", "new_sqlite_classes": ["RateLimiter"] }
+  ]
+}
