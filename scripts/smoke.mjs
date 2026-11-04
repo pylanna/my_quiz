@@ -97,6 +97,25 @@ late.ready.catch(() => {});
 await new Promise((r) => { late.ws.addEventListener("error", r); late.ws.addEventListener("close", r); });
 assert(true, "host with wrong token cannot connect");
 
+// Nobody answers → the Durable Object's timer must close the question at its deadline.
+{
+  const g = await (await fetch(base + "/api/games", { method: "POST", body: JSON.stringify({ password }) })).json();
+  const h = client(`/ws/${g.pin}?role=host&token=${g.hostToken}`);
+  const p = client(`/ws/${g.pin}?role=player`);
+  await Promise.all([h.ready, p.ready]);
+  p.send({ type: "join", nickname: "Idle" });
+  await p.until((c) => c.token, "idle player joined");
+  h.send({ type: "load_quiz", csv: "question,option_a,option_b,correct,seconds\nq,a,b,A,5" });
+  await h.until((c) => c.view?.quizLoaded, "one-question quiz loaded");
+  h.send({ type: "start" });
+  const t0 = Date.now();
+  await h.until((c) => c.view?.phase === "reveal", "deadline closes the question by timer");
+  const took = Date.now() - t0;
+  assert(took >= 4500 && took < 8000, `closed at the 5s deadline (${took} ms)`);
+  assert(p.view.reveal.answered === false && p.view.reveal.gained === 0, "unanswered question scores 0");
+  h.ws.close(); p.ws.close();
+}
+
 // Opt-in: locks THIS machine out of Host login for 15 min (reset by deleting .wrangler/state).
 if (process.env.SMOKE_RATE_LIMIT === "1") {
   const statuses = [];
