@@ -35,3 +35,6 @@ ol.board li .rank { font-weight:800; width:2em; }
 ol.board li .name { flex:1; text-align:left; }
 .big { font-size: 40px; font-weight:800; }
 .good { color:#7be07b; } .bad { color:#ff8a9b; }
+.join-row { display:flex; gap:32px; align-items:center; justify-content:center; flex-wrap:wrap; }
+.qr-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.qr { width:min(260px, 70vw); height:auto; border-radius:8px; }

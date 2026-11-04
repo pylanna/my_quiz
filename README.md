@@ -21,6 +21,10 @@ npx wrangler secret put HOST_PASSWORD
 npm run deploy                   # → https://my-quiz.<your-subdomain>.workers.dev
 ```
 
+## Join QR code
+
+The Host lobby shows a QR code for the join link (`/?pin=<PIN>`), so Players can scan instead of typing. It's drawn in the browser by [public/qr.js](public/qr.js) using the vendored `public/vendor/qrcode.js` (qrcode-generator 2.0.4 by Kazuhiko Arase, MIT licence; the licence header is kept in the file). `test/qr.test.mjs` decodes the generated code with jsQR (dev dependency) to prove it scans.
+
 ## CSV format
 
 `question,option_a,option_b,option_c,option_d,correct,seconds` — 2–4 options (fill from A, no gaps), `correct` is A–D or 1–4, `seconds` is 5–120 and optional (blank → the Host's default seconds, 20 unless changed). UTF-8 only. See `public/sample.csv`.

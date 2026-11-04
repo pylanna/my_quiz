@@ -25,6 +25,7 @@ window.T = {
   createGame: "สร้างเกม",
   badPassword: "รหัสผ่านไม่ถูกต้อง",
   joinAt: "เข้าร่วมที่",
+  scanToJoin: "สแกน QR เพื่อเข้าร่วม",
   importCsv: "นำเข้าคำถาม (CSV)",
   sampleCsv: "ดาวน์โหลดไฟล์ตัวอย่าง",
   quizLoaded: (n) => `โหลดคำถามแล้ว ${n} ข้อ`,

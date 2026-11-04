@@ -126,8 +126,9 @@
       const file = el("input", { type: "file", accept: ".csv,text/csv", onchange: onFile });
       app.append(
         el("div", { class: "card center" },
-          el("div", { class: "muted" }, `${T.joinAt} ${joinUrl}`),
-          el("div", { class: "pin" }, game.pin)),
+          el("div", { class: "join-row" },
+            el("div", { class: "qr-wrap" }, QZ.qr.svg(joinUrl, T.scanToJoin), el("div", { class: "muted" }, T.scanToJoin)),
+            el("div", {}, el("div", { class: "muted" }, `${T.joinAt} ${joinUrl}`), el("div", { class: "pin" }, game.pin)))),
         el("div", { class: "card" },
           el("h3", {}, T.importCsv),
           file,
