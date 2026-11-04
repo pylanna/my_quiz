@@ -13,6 +13,16 @@ HOST_PASSWORD=... node scripts/smoke.mjs   # end-to-end check against the runnin
 # add SMOKE_RATE_LIMIT=1 to also test the login lockout (locks you out for 15 min; reset with: rm -rf .wrangler/state)
 ```
 
+## Simulate many phones
+
+`scripts/load.mjs` plays one full Game with N simulated phones (default 20) and an auto-advancing Host: everyone joins at once, answers at random speeds, two phones drop and reconnect, two never answer one question, and a latecomer is refused. It checks scores, ranks, the results CSV and the final screens, and prints latency percentiles. Uses one successful Host login.
+
+```bash
+HOST_PASSWORD=... node scripts/load.mjs http://localhost:8787 70
+```
+
+Locally (2026-11-04): 20 and 70 phones both pass; a question reaches every phone within ~12 ms, answers confirm in ~1 ms. Those numbers exclude real network and mobile-device effects.
+
 ## Deploy (free)
 
 ```bash
